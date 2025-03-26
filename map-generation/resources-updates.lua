@@ -29,12 +29,28 @@ end
 --------------------------------------------------------------------------------
 
 -- Remove resources spawning on ammonia ocean
-terrain.mask_off_ammonia_ocean("iron-ore", "resource")
-terrain.mask_off_ammonia_ocean("copper-ore", "resource")
-terrain.mask_off_ammonia_ocean("stone", "resource")
-terrain.mask_off_ammonia_ocean("coal", "resource")
-terrain.mask_off_ammonia_ocean("uranium-ore", "resource")
-terrain.mask_off_ammonia_ocean("crude-oil", "resource")
+-- terrain.mask_off_ammonia_ocean("iron-ore", "resource")
+-- terrain.mask_off_ammonia_ocean("copper-ore", "resource")
+-- terrain.mask_off_ammonia_ocean("stone", "resource")
+-- terrain.mask_off_ammonia_ocean("coal", "resource")
+-- terrain.mask_off_ammonia_ocean("uranium-ore", "resource")
+-- terrain.mask_off_ammonia_ocean("crude-oil", "resource")
+
+terrain.mask_nauvis_territory("crude-oil", "resource")
+terrain.mask_nauvis_territory("iron-ore", "resource")
+terrain.mask_nauvis_territory("copper-ore", "resource")
+terrain.mask_nauvis_territory("coal", "resource")
+terrain.mask_nauvis_territory("uranium-ore", "resource")
+terrain.mask_nauvis_territory("scrap", "resource")
+terrain.mask_off_aquilo_territory("stone", "resource")
+terrain.mask_off_vulcano_terrain("stone", "resource")
+-- Mask resources from ammonia ocean
+-- terrain.mask_off_aquilo_territory("calcite", "resource")
+-- terrain.mask_off_gleba_territory("calcite", "resource")
+-- terrain.mask_off_aquilo_territory("tungsten-ore", "resource")
+-- terrain.mask_off_gleba_territory("tungsten-ore", "resource")
+-- terrain.mask_vulcano_coverage("calcite", "resource")
+-- terrain.mask_vulcano_coverage("tungsten-ore", "resource")
 
 --------------------------------------------------------------------------------
 -- MARK: Remove Aquilo resources to from Aquilo -- Dunno why i have to do this only for this planet...
@@ -79,20 +95,76 @@ data.raw.planet["nauvis"].map_gen_settings.autoplace_settings.entity.settings["s
 -- autoplace_controls
 data.raw.planet["nauvis"].map_gen_settings.autoplace_controls["sulfuric_acid_geyser"] = {}
 
--- Mask resources from ammonia ocean
-terrain.mask_off_ammonia_ocean("calcite", "resource")
-terrain.mask_off_ammonia_ocean("tungsten-ore", "resource")
-
 -- START: Fix Resource spawning
 data.raw.resource["calcite"].autoplace.has_starting_area_placement = false -- Does nothing but noise expression vulcanus_starting_calcite removes starter spot
-data.raw["noise-expression"]["vulcanus_starting_calcite"].expression = "-inf"
-data.raw["noise-expression"]["vulcanus_calcite_probability"].expression = "mask_off_ammonia_ocean((control:calcite:size > 0) * (1000 * ((0.5 + vulcanus_calcite_region) * random_penalty_between(0.9, 1, 1) - 1)))"
-
 data.raw.resource["sulfuric-acid-geyser"].autoplace.has_starting_area_placement = false -- Does nothing but noise expression vulcanus_starting_sulfur removes starter spot
-data.raw["noise-expression"]["vulcanus_sulfuric_acid_geyser_probability"].expression = "(control:sulfuric_acid_geyser:size > 0) * (0.005 * ((vulcanus_sulfuric_acid_region_patchy > 0) + 2 * updated_volcanic_folds))"
-data.raw["noise-expression"]["vulcanus_starting_sulfur"].expression = "-inf"
-
 data.raw.resource["tungsten-ore"].autoplace.has_starting_area_placement = false -- Does nothing but noise expression vulcanus_starting_tungsten removes starter spot
-data.raw["noise-expression"]["vulcanus_tungsten_ore_probability"].expression = "mask_off_ammonia_ocean((control:tungsten_ore:size > 0) * (1000 * ((0.7 + vulcanus_tungsten_ore_region) * random_penalty_between(0.9, 1, 1) - 1)))"
+
+data.raw["noise-expression"]["vulcanus_starting_calcite"].expression = "-inf"
+data.raw["noise-expression"]["vulcanus_starting_sulfur"].expression = "-inf"
 data.raw["noise-expression"]["vulcanus_starting_tungsten"].expression = "-inf"
+
+data.raw["noise-expression"]["vulcanus_starting_calcite"].expression = "-inf"
+data.raw["noise-expression"]["vulcanus_starting_sulfur"].expression = "-inf"
+data.raw["noise-expression"]["vulcanus_starting_tungsten"].expression = "-inf"
+
+local NE = data.raw["noise-expression"]
+NE['vulcanus_calcite_region'].expression = "mask_updated_volcanic_folds_flat(\z
+                                            spot_noise{x = x,\z
+                                                       y = abs_y,\z
+                                                       seed0 = map_seed,\z
+                                                       seed1 = 749,\z
+                                                       candidate_spot_count = 3,\z
+                                                       suggested_minimum_candidate_point_spacing = 0,\z
+                                                       skip_span = 1,\z
+                                                       skip_offset = 0,\z
+                                                       region_size = 600,\z
+                                                       density_expression = 80,\z
+                                                       spot_quantity_expression = 1000,\z
+                                                       spot_radius_expression = 32,\z
+                                                       hard_region_target_quantity = 0,\z
+                                                       spot_favorability_expression = updated_volcanic_folds_flat,\z
+                                                       basement_value = -1,\z
+                                                       maximum_spot_basement_radius = 200})"
+-- NE['vulcanus_calcite_region'].local_expressions = {radius = "vulcanus_calcite_size * min(1.2, vulcanus_ore_dist) * 25"}
+data.raw["noise-expression"]["vulcanus_calcite_probability"].expression = "vulcanus_calcite_region * 1000"
+
+NE['vulcanus_sulfuric_acid_region_patchy'].expression = "mask_updated_volcanic_folds_flat(\z
+                                                         spot_noise{x = x,\z
+                                                         y = abs_y,\z
+                                                         seed0 = map_seed,\z
+                                                         seed1 = 759,\z
+                                                         candidate_spot_count = 1,\z
+                                                         suggested_minimum_candidate_point_spacing = 0,\z
+                                                         skip_span = 1,\z
+                                                         skip_offset = 0,\z
+                                                         region_size = 600,\z
+                                                         density_expression = 80,\z
+                                                         spot_quantity_expression = 1000,\z
+                                                         spot_radius_expression = 32,\z
+                                                         hard_region_target_quantity = 0,\z
+                                                         spot_favorability_expression = updated_volcanic_folds_flat * 1000000,\z
+                                                         basement_value = -1,\z
+                                                         maximum_spot_basement_radius = 32})"
+-- NE['vulcanus_sulfuric_acid_region_patchy'].local_expressions = {radius = "vulcanus_sulfuric_acid_geyser_size * min(1.2, vulcanus_ore_dist) * 25"}
+
+NE['vulcanus_tungsten_ore_region'].expression = "mask_updated_volcanic_folds_flat(\z
+                                                 spot_noise{x = x,\z
+                                                            y = abs_y,\z
+                                                            seed0 = map_seed,\z
+                                                            seed1 = 789,\z
+                                                            candidate_spot_count = 1,\z
+                                                            suggested_minimum_candidate_point_spacing = 0,\z
+                                                            skip_span = 1,\z
+                                                            skip_offset = 0,\z
+                                                            region_size = 600,\z
+                                                            density_expression = 80,\z
+                                                            spot_quantity_expression = 1000,\z
+                                                            spot_radius_expression = 32,\z
+                                                            hard_region_target_quantity = 0,\z
+                                                            spot_favorability_expression = updated_volcanic_folds_flat,\z
+                                                            basement_value = -1,\z
+                                                            maximum_spot_basement_radius = 200})"
+-- NE['vulcanus_tungsten_ore_region'].local_expressions = {radius = "vulcanus_tungsten_ore_size * min(1.2, vulcanus_ore_dist) * 25"}
+
 -- END: Fix Resource spawning

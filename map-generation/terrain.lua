@@ -145,13 +145,6 @@ terrain.mask_nauvis_territory("red-desert-2", "tile")
 terrain.mask_nauvis_territory("red-desert-3", "tile")
 -- terrain.mask_nauvis_territory("water", "tile")
 -- terrain.mask_nauvis_territory("deepwater", "tile")
-terrain.mask_nauvis_territory("crude-oil", "resource")
-terrain.mask_nauvis_territory("iron-ore", "resource")
-terrain.mask_nauvis_territory("copper-ore", "resource")
-terrain.mask_nauvis_territory("coal", "resource")
-terrain.mask_nauvis_territory("uranium-ore", "resource")
-terrain.mask_vulcano_terrain("calcite", "resource")
-terrain.mask_off_aquilo_territory("stone", "resource")
 -- END: Mask nauvis territory on all autoplace settings
 
 -- Remove nauvis cliffs from vulcanus_terrain
@@ -996,6 +989,13 @@ data.raw["noise-expression"]["lava_hot_mountains_range"].expression = "1000 * ra
 -- Mask vulcanus decoratives
 data.raw["noise-expression"]["crater_cliff"].expression = "mask_vulcano_coverage(0.5 * (vulcanus_rock_noise + 0.5 * aux - 0.5 * moisture) * (1 - max(vulcanus_basalts_biome,vulcanus_ashlands_biome)) * place_every_n(21,21,0,0))"
 
+-- vulcanus_tungsten_ore_favorability
+--data.raw['noise-expression']['vulcanus_basalts_resource_favorability'].expression = "max(updated_volcanic_folds, updated_volcanic_folds_flat) > 0"
+-- vulcanus_calcite_favorability
+--data.raw['noise-expression']['vulcanus_mountains_resource_favorability'].expression = "max(updated_volcanic_folds, updated_volcanic_folds_flat) > 0"
+-- vulcanus_coal_favorability
+--data.raw['noise-expression']['vulcanus_ashlands_resource_favorability'].expression = "max(updated_volcanic_folds, updated_volcanic_folds_flat) > 0"
+
 -- New noise expressions and noise functions
 data:extend({
   -- Noise expressions
@@ -1044,6 +1044,13 @@ data:extend({
     name = "mask_vulcano_terrain",
     parameters = {"expression"},
     expression = "if(vulcanus_terrain, expression, -inf)"
+  },
+  {
+    -- Mask all vulcanus terrain
+    type = "noise-function",
+    name = "mask_updated_volcanic_folds_flat",
+    parameters = {"expression"},
+    expression = "if(updated_volcanic_folds_flat, expression, -inf)"
   },
   {
     -- Mask off close surroundings of vulcano
